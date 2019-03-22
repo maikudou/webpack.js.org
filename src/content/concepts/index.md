@@ -1,5 +1,5 @@
 ---
-title: Concepts
+title: Основы
 sort: 1
 contributors:
   - TheLarkInn
@@ -16,37 +16,38 @@ contributors:
   - yairhaimo
   - farskid
   - LukeMwila
+  - maikudou
 ---
 
-At its core, __webpack__ is a _static module bundler_ for modern JavaScript applications. When webpack processes your application, it internally builds a [dependency graph](/concepts/dependency-graph/) which maps every module your project needs and generates one or more _bundles_.
+__webpack__, по своей сути — это _сборщик статических модулей_ для современных, написанных на JavaScript веб-приложений. webpack, анализирует ваше приложение, строит внутренний [граф зависимостей](/concepts/dependency-graph/) между модулями, которые то использует и генерирует на основе графа одну или несколько _сборок_ или, иначе, _бандлов_.
 
-T> Learn more about JavaScript modules and webpack modules [here](/concepts/modules).
+T> Более подробно о разнице между модулями JavaScript и модулями webpack можно прочитать [там](/concepts/modules).
 
-Since version 4.0.0, __webpack does not require a configuration file__ to bundle your project, nevertheless it is [incredibly configurable](/configuration) to better fit your needs.
+Несмотря на то, что начиная с версии 4.0.0 __webpack не требует наличия конфигурационного файла__, он [очень гибко настраивается](/configuration) под ваши нужды.
 
-To get started you only need to understand its __Core Concepts__:
+Для начала нужно усвоить несколько __Основных Понятий__:
 
-- [Entry](#entry)
-- [Output](#output)
-- [Loaders](#loaders)
-- [Plugins](#plugins)
-- [Mode](#mode)
-- [Browser Compatibility](#browser-compatibility)
+- [Точка входа](#entry)
+- [Выхлоп](#output)
+- [Загрузчики](#loaders)
+- [Плагины](#plugins)
+- [Режим](#mode)
+- [Совместимость с браузерами](#browser-compatibility)
 
-This document is intended to give a __high-level__ overview of these concepts, while providing links to detailed concept-specific use cases.
+Этот документ задумывался как __высокоуровневый__ обзор основных понятий со ссылками на более детализированные примеры использования отдельных концепций.
 
-For a better understanding of the ideas behind module bundlers and how they work under the hood, consult these resources:
+Обратитесь к следущим ресурсам (на английском), чтобы лучше понимать идеи, заложенные в сборщики модулей и как те работают "под капотом":
 
-- [Manually Bundling an Application](https://www.youtube.com/watch?v=UNMkLHzofQI)
-- [Live Coding a Simple Module Bundler](https://www.youtube.com/watch?v=Gc9-7PBqOC8)
-- [Detailed Explanation of a Simple Module Bundler](https://github.com/ronami/minipack)
+- [Сборка приложения вручную](https://www.youtube.com/watch?v=UNMkLHzofQI)
+- [Пишем простой сборщик модулей вживую](https://www.youtube.com/watch?v=Gc9-7PBqOC8)
+- [Подробное объяснение простого сборщика моулей](https://github.com/ronami/minipack)
 
 
-## Entry
+## Точка входа
 
-An __entry point__ indicates which module webpack should use to begin building out its internal [dependency graph](/concepts/dependency-graph/). webpack will figure out which other modules and libraries that entry point depends on (directly and indirectly).
+__Точка входа__ указывает webpack'у с какого модуля тот должен начать строить свой внутренний [граф зависимостей](/concepts/dependency-graph/). webpack определит, от каких еще модулей эта точка входа зависит как напрямую, так и косвенно.
 
-By default its value is `./src/index.js`, but you can specify a different (or multiple entry points) by configuring the __entry__ property in the [webpack configuration](/configuration). For example:
+Точка входа по умолчанию — `./src/index.js`, однако вы можете указать другую точку входа (или несколько) в поле __entry__ [конфгурационного файла](/configuration). Например:
 
 __webpack.config.js__
 
@@ -56,14 +57,14 @@ module.exports = {
 };
 ```
 
-T> Learn more in the [entry points](/concepts/entry-points) section.
+T> Подробнее о точках входа — в [соответствующем разделе](/concepts/entry-points).
 
 
-## Output
+## Выхлоп
 
-The __output__ property tells webpack where to emit the _bundles_ it creates and how to name these files. It defaults to `./dist/main.js` for the main output file and to the `./dist` folder for any other generated file.
+Поле __output__ (выхлоп) указывает, куда webpack'у следует поместить сгенерированные сборки, и как эти файлы назвать. По умолчанию это — `./dist/main.js` для основной сборки и папка `./dist` для любых других файлов.
 
-You can configure this part of the process by specifying an `output` field in your configuration:
+Эту часть процесса можно настроить заполнив поле `output` в конфигурационном файле:
 
 __webpack.config.js__
 
@@ -79,21 +80,21 @@ module.exports = {
 };
 ```
 
-In the example above, we use the `output.filename` and the `output.path` properties to tell webpack the name of our bundle and where we want it to be emitted to. In case you're wondering about the path module being imported at the top, it is a core [Node.js module](https://nodejs.org/api/modules.html) that gets used to manipulate file paths.
+В приведенном выше примере мы использовали `output.filename` и `output.path`, чтобы указать webpack'у как назвать получившуюся сборку и куда ее следует положить. Если вам интересно, что это за path, который мы импортировали в самом начале, то это встроенный в [Node.js модуль](https://nodejs.org/api/modules.html), который используют для различной работы с файловыми путями.
 
-T> The `output` property has [many more configurable features](/configuration/output) and if you like to know more about the concepts behind it, you can [read more in the output section](/concepts/output).
+T> Поле `output` достаточно [гибко настраивается](/configuration/output) и если вы хотите познакомиться более подробно со стоящими за ним концепциями, то почитайте более подробно в соответствующем [разделе](/concepts/output).
 
 
-## Loaders
+## Загрузчики
 
-Out of the box, webpack only understands JavaScript and JSON files. __Loaders__ allow webpack to process other types of files and convert them into valid [modules](/concepts/modules) that can be consumed by your application and added to the dependency graph.
+Из коробки webpack умеет работать только с файлами JavaScript и JSON. Чтобы webpack смог обработать другие типы файлов, преобразовать их в валидные [модули](/concepts/modules) и включить те в граф зависимостей необходимы __загрузчики__.
 
-W> Note that the ability to `import` any type of module, e.g. `.css` files, is a feature specific to webpack and may not be supported by other bundlers or task runners. We feel this extension of the language is warranted as it allows developers to build a more accurate dependency graph.
+W> Обратите внимание, что способность импортировать любые типы модулей с помощью директивы `import`, такие как, например, `.css` файлы, это особенность webpack'а и другие сборщики могут не иметь такой возможности. Мы считаем оправданным такое расширение языка, потому что оно позволяет разработчикам строить более точный граф зависимостей. 
 
-At a high level, __loaders__ have two properties in your webpack configuration:
+В конфигурационном файле поле __loaders__ имеет два высокоуровневых свойства:
 
-1. The `test` property identifies which file or files should be transformed.
-2. The `use` property indicates which loader should be used to do the transforming.
+1. Свойство `test` (соответствие) определяет какой файл или файлы необходимо преобразовывать.
+2. Свойство `use` (использовать) указывает как загрузчик для этого использовать.
 
 __webpack.config.js__
 
@@ -112,30 +113,31 @@ module.exports = {
 };
 ```
 
-The configuration above has defined a `rules` property for a single module with two required properties: `test` and `use`. This tells webpack's compiler the following:
+Приведенная конфигурация определяет поле `rules` (правила) для отдельного модуля с помощью двух обязательных свойств: `test` и `use`. Это сообщает webpack'у следующее:
 
-> "Hey webpack compiler, when you come across a path that resolves to a '.txt' file inside of a `require()`/`import` statement, __use__ the `raw-loader` to transform it before you add it to the bundle."
+> "Эй, компилятор webpack, когда встретишь внутри инструкции `require()`/`import` путь, который кончается на '.txt', то перед тем как добавлять его в сборку, преобразуй его __используя__ `raw-loader`"
 
-W> It is important to remember that when defining rules in your webpack config, you are defining them under `module.rules` and not `rules`. For your benefit, webpack will warn you if this is done incorrectly.
+W> Важно помнить, что правила в конфигурационном файле определяются в поле `module.rules` a не просто `rules`. Если вы сделаете это неправильно, то webpack вас об этом предупредит.
 
-W> Keep in mind that when using regex to match files, you may not quote it. i.e `/\.txt$/` is not the same as `'/\.txt$/'`/ `"/\.txt$/"`. The former instructs webpack to match any file that ends with .txt and the later instructs webpack to match a single file with an absolute path '.txt'; this is likely not your intention. 
+W> Имейте ввиду, что регулярные выражения в качестве правил соответствия не должны заключаться в ковычки. То есть `/\.txt$/` это не то же самое, что `'/\.txt$/'`/ `"/\.txt$/"`. Первое указывает webpack'у искать файлы, имена которых оканчиваются на .txt, тогда как последнее предсписывает искать единственный файл с абсолютным путем '.txt'; скорее всего, это не то, что бы вы имели ввиду.
 
-You can check further customization when including loaders in the [loaders section](/concepts/loaders).
+Прочие настройки можно узнать в разделе о [загрузчиках](/concepts/loaders).
 
 
-## Plugins
+## Плагины
 
-While loaders are used to transform certain types of modules, plugins can be leveraged to perform a wider range of tasks like bundle optimization, asset management and injection of environment variables.
+Загрузчики используются для преобразования определенных типов модулей, плагины же помогают выполнять более широкий спектр задач, таких, например, как оптимизация сборки, работа с ресурсами и внедрение переменных окружения.
 
-T> Check out the [plugin interface](/api/plugins) and how to use it to extend webpacks capabilities.
+T> Ознакомьтесь с [интерфейсом плагинов](/api/plugins) и тем, как его использовать для расширения возможностей webpack'а.
 
-In order to use a plugin, you need to `require()` it and add it to the `plugins` array. Most plugins are customizable through options. Since you can use a plugin multiple times in a config for different purposes, you need to create an instance of it by calling it with the `new` operator.
+Чтобы использовать плагин, необходимо импортировать его директивой `require()` и добавить в массив `plugins`. Большинство плагинов кастомизируются с помощью настроек. Из-за того что в одном конфигурационном файле вы можете использовать определенный плагин несколько раз с разными целями, вам нужно создать его экземпляр с помощью оператора `new`.
+
 
 __webpack.config.js__
 
 ```javascript
-const HtmlWebpackPlugin = require('html-webpack-plugin'); //installed via npm
-const webpack = require('webpack'); //to access built-in plugins
+const HtmlWebpackPlugin = require('html-webpack-plugin'); //устанавливается  через npm
+const webpack = require('webpack'); //чтобы использоваьб встроенные плагины
 
 module.exports = {
   module: {
@@ -149,16 +151,16 @@ module.exports = {
 };
 ```
 
-In the example above, the `html-webpack-plugin` generates an HTML file for your application by injecting automatically all your generated bundles.
+В вышеприведенном примере плагин `html-webpack-plugin` создает для вашего приложения файл HTML, автоматически внедряя в него все сгенерированные сборки.
 
-T> There are many plugins that webpack provides out of the box! Check out the [list of plugins](/plugins).
+T> webpack поставляется со множестовм плагинов "из коробки"! Вот их [список](/plugins).
 
-Using plugins in your webpack config is straightforward - however, there are many use cases that are worth further exploration. [Learn more about them here](/concepts/plugins).
+Использовать плагины в вашем конфигурационном файле просто, однако есть несколько их применений, которые требуют дополнительного изучения. Подробнее [здесь](/concepts/plugins).
 
 
-## Mode
+## Режим
 
-By setting the `mode` parameter to either `development`, `production` or `none`, you can enable webpack's built-in optimizations that correspond to each environment. The default value is `production`.
+Устанавливая параметр `mode` (режим) в `development` (разработка), `production` (продакшн) или `none` (никакой), можно заставить webpack использовать встроенные оптимизации, подходящие к каждому из окружений. Значение по умолчанию — `production`.
 
 ```javascript
 module.exports = {
@@ -166,9 +168,9 @@ module.exports = {
 };
 ```
 
-Learn more about the [mode configuration here](/concepts/mode) and what optimizations take place on each value.
+Прочитайте про [настройку режима](/concepts/mode) и о том, какие конкретно оптимизации включаются при определенных значениях
 
 
-## Browser Compatibility
+## Совместимость с браузерами
 
-webpack supports all browsers that are [ES5-compliant](https://kangax.github.io/compat-table/es5/) (IE8 and below are not supported). webpack needs `Promise` for `import()` and `require.ensure()`. If you want to support older browsers, you will need to [load a polyfill](/guides/shimming/) before using these expressions.
+webpack поддерживает все [совместимые с ES5](https://kangax.github.io/compat-table/es5/) браузеры (IE8 и ниже не поддерживаются). webpack использует `Promise` (промисы) для директив `import()` и `require.ensure()`. Для поддержки более старых браузеров необходимо будет [загрузить полифил](/guides/shimming/) до использования этих выражений.
