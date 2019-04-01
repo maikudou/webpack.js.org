@@ -1,21 +1,22 @@
 ---
-title: Output
+title: Вывод
 sort: 3
 contributors:
   - TheLarkInn
   - chyipin
   - rouzbeh84
   - byzyk
+  - maikudou
 ---
 
-Configuring the `output` configuration options tells webpack how to write the compiled files to disk. Note that, while there can be multiple `entry` points, only one `output` configuration is specified.
+Настройка `output` в конфигурационном файле указывает webpack'у как сохранять скомпилированные файлы на диск. Обратите внимание, что несмотря на то, что допустимо наличие нескольких точек входа, в конфигурации возможен только один вывод в поле `output`. 
 
 
-## Usage
+## Использование
 
-The minimum requirements for the `output` property in your webpack config is to set its value to an object including the following thing:
+Минимальным требованием для указанять свойства `output` в вашей конфигурации является передача в него объекта, состоящего из:
 
-- A `filename` to use for the output file(s).
+- Аттрибута `filename`, который будет использоваться для выводимого файла(ов).
 
 __webpack.config.js__
 
@@ -27,12 +28,12 @@ module.exports = {
 };
 ```
 
-This configuration would output a single `bundle.js` file into the `dist` directory.
+Эта конфигурация выведет в папку `dist` единственный файл `bundle.js`.
 
 
-## Multiple Entry Points
+## Несколько Входных Точек
 
-If your configuration creates more than a single "chunk" (as with multiple entry points or when using plugins like CommonsChunkPlugin), you should use [substitutions](/configuration/output#output-filename) to ensure that each file has a unique name.
+Если ваша конфигурация подразумевает более одного "чанка" (например, если указано несколько входных точек или если используется плагин CommonsChunkPlugin), то чтобы быть уверенным, что каждый файл получит уникальное имя, вам следует использовать [подстановки](/configuration/output#output-filename).
 
 ```javascript
 module.exports = {
@@ -46,13 +47,13 @@ module.exports = {
   }
 };
 
-// writes to disk: ./dist/app.js, ./dist/search.js
+// пишет на диск: ./dist/app.js, ./dist/search.js
 ```
 
 
-## Advanced
+## Продвинутое использование
 
-Here's a more complicated example of using a CDN and hashes for assets:
+Вот более сложный пример, использующий CDN и хеши ресурсов:
 
 __config.js__
 
@@ -66,10 +67,10 @@ module.exports = {
 };
 ```
 
-In cases where the eventual `publicPath` of output files isn't known at compile time, it can be left blank and set dynamically at runtime via the `__webpack_public_path__` variable in the entry point file:
+В случае если путь, указанный в `publicPath` еще не известен в момент компиляции, его можно опустить и указать динамически во время выполнения, переопределив переменную `__webpack_public_path__` в файле-точке входа.
 
 ```javascript
 __webpack_public_path__ = myRuntimePublicPath;
 
-// rest of your application entry
+// остальной код приложения
 ```

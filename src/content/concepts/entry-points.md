@@ -1,5 +1,5 @@
 ---
-title: Entry Points
+title: Точки входа
 sort: 2
 contributors:
   - TheLarkInn
@@ -7,14 +7,14 @@ contributors:
   - byzyk
   - sokra
   - EugeneHlushko
+  - maikudou
 ---
 
-As mentioned in [Getting Started](/guides/getting-started/#using-a-configuration), there are multiple ways to define the `entry` property in your webpack configuration. We will show you the ways you __can__ configure the `entry` property, in addition to explaining why it may be useful to you.
+Как упоминалось в разделе [Приступаем к работе](/guides/getting-started/#using-a-configuration), существует несколько способов, как можно определить поле `entry` в конфигурационном файле webpack'а. Мы покажем, каким образом вы __можете__ настроить точки входа, поясняя, чем тот или иной способ может быть вам более полезен.
 
+## Синтаксис Одиночной Записи (Сокращенный)
 
-## Single Entry (Shorthand) Syntax
-
-Usage: `entry: string|Array<string>`
+Формат: `entry: string|Array<string>`
 
 __webpack.config.js__
 
@@ -24,7 +24,7 @@ module.exports = {
 };
 ```
 
-The single entry syntax for the `entry` property is a shorthand for:
+Одиночная запись свойства `entry` это упрощенный вариант следующего:
 
 __webpack.config.js__
 
@@ -36,14 +36,14 @@ module.exports = {
 };
 ```
 
-T> __What happens when you pass an array to `entry`?__ Passing an array of file paths to the `entry` property creates what is known as a __"multi-main entry"__. This is useful when you would like to inject multiple dependent files together and graph their dependencies into one "chunk".
+T> __Что будет если передать массив в `entry`?__ Передача массива путей в качестве свойста `entry` создает так называемую __"множественную главную запись"__. Это может пригодиться, когда вы хотите соединить несколько зависимых друг от друга файлов вместе и записать их зависимости в граф одним "чанком".
 
-This is a great choice when you are looking to quickly setup a webpack configuration for an application or tool with one entry point (i.e., a library). However, there is not much flexibility in extending or scaling your configuration with this syntax.
+Это хороший вариант когда вы хотите быстро настроить webpack для приложения или инструмента с одной точкой входа (например, библиотеки). Однако такой способ записи ограничивет гибкость расширения и масштабирования.
 
 
-## Object Syntax
+## Объектный Синтаксис
 
-Usage: `entry: {[entryChunkName: string]: string|Array<string>}`
+Формат: `entry: {[entryChunkName: string]: string|Array<string>}`
 
 __webpack.config.js__
 
@@ -56,20 +56,20 @@ module.exports = {
 };
 ```
 
-The object syntax is more verbose. However, this is the most scalable way of defining entry/entries in your application.
+Объектный синтаксис требует чуть большей выразительности. Однако он является наиболее масштабируемым способом указания точки/точек входа вашего приложения.
 
-T> __"Scalable webpack configurations"__ are ones that can be reused and combined with other partial configurations. This is a popular technique used to separate concerns by environment, build target and runtime. They are then merged using specialized tools like [webpack-merge](https://github.com/survivejs/webpack-merge).
+T> __"Масштабируемые webpack-конфигурации"__ это такие конфигурации, которые можно использовать повторно и коибинировать с другими частичными конфигурациями. Это популярный подход для разделения зон ответственности между окружением, целью сборки и рантаймом. Такие конфигурации в последствии объединяют с помощью специальных инструментов типа [webpack-merge](https://github.com/survivejs/webpack-merge).
 
 
-## Scenarios
+## Сценарии
 
-Below is a list of entry configurations and their real-world use cases:
+Ниже приведен список конфигураций точек входа и примеры их применения в реальном мире.
 
-### Separate App and Vendor Entries
+### Отдельные записи для Приложения и Библиотек
 
-T> In webpack version < 4 it was common to add vendors as separate entrypoint to compile it as separate file (in combination with the `CommonsChunkPlugin`). This is discouraged in webpack 4. Instead the `optimization.splitChunks` option takes care of separating vendors and app modules and creating a separate file. __Do not__ create an entry for vendors or other stuff which is not the starting point of execution.
+T> До четвертой версии webpack'a было принято добавлять библиотеки отдеьлной точкой входа, чтобы получить на выходе отдельный файл (в комбинации с плагином `CommonsChunkPlugin`). Начиная с четвертой версии это не рекомендуется. Вместо это настройка `optimization.splitChunks` занимается разделением моделей библиотеки и приложения и сохраняет их в разные файлы. __Не создавайте__ различные точки входа для библиотек и прочего, не являющегося начальной точной выполнения приложения.
 
-### Multi Page Application
+### Многостраничные Приложения
 
 __webpack.config.js__
 
@@ -83,10 +83,10 @@ module.exports = {
 };
 ```
 
-__What does this do?__ We are telling webpack that we would like 3 separate dependency graphs (like the above example).
+__Что тут происходит__ Мы указываем webpack'у что нам нужны три раздельных графа зависимостей (как в примере выше).
 
-__Why?__ In a multi-page application, the server is going to fetch a new HTML document for you. The page reloads this new document and assets are redownloaded. However, this gives us the unique opportunity to do multiple things:
+__Почему?__ В многостраничном приложении сервер выдает вам новый HTML-документ. Страница перезагружает этот документ и ресурсы загружаются заново. Однако, это повзволяет нам сделать множество вещей:
 
-- Use `optimization.splitChunks` to create bundles of shared application code between each page. Multi-page applications that reuse a lot of code/modules between entry points can greatly benefit from these techniques, as the amount of entry points increase.
+- Используйте `optimization.splitChunks` чтобы создать сборки используемого на несколькох страницах общего кода. По мере того, как количество точек входа, использующих один и тот же код в многостраничном приложении растет, этот подход может серьезно облегчить жизнь в дальнейшем.
 
-T> As a rule of thumb: for each HTML document use exactly one entry point.
+T> Возьмите за правило: для каждого HTML-документа—ровно одна точка входа.

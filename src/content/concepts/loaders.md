@@ -1,5 +1,5 @@
 ---
-title: Loaders
+title: Загрузчики
 sort: 4
 contributors:
   - manekinekko
@@ -12,21 +12,22 @@ contributors:
   - byzyk
   - debs-obrien
   - EugeneHlushko
+  - maikudou
 ---
 
-Loaders are transformations that are applied on the source code of a module. They allow you to pre-process files as you `import` or “load” them. Thus, loaders are kind of like “tasks” in other build tools and provide a powerful way to handle front-end build steps. Loaders can transform files from a different language (like TypeScript) to JavaScript or inline images as data URLs. Loaders even allow you to do things like `import` CSS files directly from your JavaScript modules!
+Загрузчики преобразовывают исходный код модулей. Они позволяют обрабатывать файлы перед тем как они `импортируются` или "загружаются". Таким образом, загрузчики подобны "таскам" в других системах сборки и предоставляют мощный инструмент для работы с шагами сборки front-end приложения. Загрузчики могут преобразовывать файлы из одного языка (например, TypeScrypt) в JavaScript или превращать изображения в data-URL'ы. Они даже позволяют вам делать такие вещи, как `импортирование` CSS-файлов напрямую в JavaScript-модули!
 
 
-## Example
+## Пример
 
-For example, you can use loaders to tell webpack to load a CSS file or to convert TypeScript to JavaScript. To do this, you would start by installing the loaders you need:
+Например, можно использовать загрузчики чтобы webpack загружал CSS-файл или чтобы преобразовывать TypeScript в JavaScript. Для начала необходимые загрузчики нужно установить:
 
 ``` bash
 npm install --save-dev css-loader
 npm install --save-dev ts-loader
 ```
 
-And then instruct webpack to use the [`css-loader`](/loaders/css-loader) for every `.css` file and the [`ts-loader`](https://github.com/TypeStrong/ts-loader) for all `.ts` files:
+А потом, указать webpack'у чтобы тот использовал [`css-loader`](/loaders/css-loader) для всех `.css` файлов и [`ts-loader`](https://github.com/TypeStrong/ts-loader) для всех `.ts` файлов.
 
 __webpack.config.js__
 
@@ -42,21 +43,21 @@ module.exports = {
 ```
 
 
-## Using Loaders
+## Использование Загрузчиков
 
-There are three ways to use loaders in your application:
+Существует три способа использования загрузчиков в приложении:
 
-- [Configuration](#configuration) (recommended): Specify them in your __webpack.config.js__ file.
-- [Inline](#inline): Specify them explicitly in each `import` statement.
-- [CLI](#cli): Specify them within a shell command.
+- [В файле конфигурации](#configuration) (рекомендуется): Укажите их в файле __webpack.config.js__.
+- [По месту применения](#inline): Укажите их явно, в выражении `import`.
+- [CLI](#cli): Укажите их в консольной команде.
 
 
-### Configuration
+### В файле конфигурации
 
-[`module.rules`](/configuration/module/#module-rules) allows you to specify several loaders within your webpack configuration.
-This is a concise way to display loaders, and helps to maintain clean code. It also offers you a full overview of each respective loader.
+Поле [`module.rules`](/configuration/module/#module-rules) в конфигурационном файле webpack'а позволяет указывать несколько загрузчиков.
+Этот лаконичный способ отображения загрузчков позволяет сохранять код чистым. Кроме того он позволяет легко видеть настройки каждого из них.
 
-Loaders are evaluated/executed from right to left. In the example below execution starts with sass-loader, continues with css-loader and finally ends with style-loader. See ["Loader Features"](/concepts/loaders/#loader-features) for more information about loaders order.
+Загрузчики обрабатываются/выполняются справа налево. В нижеприведенном примере выполнение начинается с загрузчика sass-loader, продолжается с загрузчкиком css-loader и заканчивается загрузчком style-loader. Больше информации по порядку выполнения загрузчков можно узнать в разделе ["Особенности Загрузчков"](/concepts/loaders/#loader-features).
 
 ```js-with-links-with-details
 module.exports = {
@@ -81,48 +82,47 @@ module.exports = {
 ```
 
 
-### Inline
+### По месту применения
 
-It's possible to specify loaders in an `import` statement, or any [equivalent "importing" method](/api/module-methods). Separate loaders from the resource with `!`. Each part is resolved relative to the current directory.
+Можно указывать загрузчики непосредственно в выражении `import` или любом другом эквивалентном [способе "импорта"](/api/module-methods). Загрузчики от ресурсов отделяются восклицательным знаком. Пути вычисляются относительно текущего каталога.
 
 ```js
 import Styles from 'style-loader!css-loader?modules!./styles.css';
 ```
 
-It's possible to override any loaders in the configuration by prefixing the entire rule with `!`.
+Чтобы переопределить любые загрузчики из файла конфигурации можно указать перед правилом символ `!`.
 
-Options can be passed with a query parameter, e.g. `?key=value&foo=bar`, or a JSON object, e.g. `?{"key":"value","foo":"bar"}`.
+Настройки можно передавать в виде паоаметра запроса, то есть, `?key=value&foo=bar` или JSON-объекта, `?{"key":"value","foo":"bar"}`
 
-T> Use `module.rules` whenever possible, as this will reduce boilerplate in your source code and allow you to debug or locate a loader faster if something goes south.
+T> Предпочитайте указывать загрузчики в поле `module.rules` конфигурационного файла, это уменьшает необходимое количество кода в исходных файлах и позволяет быстрее находить ошибки, свазанные с работой загрузчков, когда что-то идет не так.
 
 
 ### CLI
 
-You can also use loaders through the CLI:
+Также можно использовать загрузчкик через интерфейс командной строки:
 
 ```bash
 webpack --module-bind jade-loader --module-bind 'css=style-loader!css-loader'
 ```
 
-This uses the `jade-loader` for `.jade` files, and the [`style-loader`](/loaders/style-loader) and [`css-loader`](/loaders/css-loader) for `.css` files.
+Эта команда предписывает использовать `jade-loader` для файлов `.jade` и `style-loader`](/loaders/style-loader) c [`css-loader`](/loaders/css-loader) для `.css`-файлов.
 
 
-## Loader Features
+## Особенности Загрузчков
 
-- Loaders can be chained. Each loader in the chain applies transformations to the processed resource. A chain is executed in reverse order. The first loader passes its result (resource with applied transformations) to the next one, and so forth. Finally, webpack expects JavaScript to be returned by the last loader in the chain.
-- Loaders can be synchronous or asynchronous.
-- Loaders run in Node.js and can do everything that’s possible there.
-- Loaders can be configured with an `options` object (using `query` parameters to set options is still supported but has been deprecated).
-- Normal modules can export a loader in addition to the normal `main` via `package.json` with the `loader` field.
-- Plugins can give loaders more features.
-- Loaders can emit additional arbitrary files.
+- Загрузчки можно выстраивать в цепочки. Каждый загрузчик в цепи изменяет преобразуемый ресурс. Цепочка выполняется в обратном порядке. Первый загрузчик передает результат своей работы (ресурс с преобразованиями) следующему, и так далее. Webpack ожидает, что последний загрузчик в цепи вернет JavaScript.
+- Загрузчики могут быть как синхронными, так и асинхронными.
+- Загрузчики выполняются Node.js и могут делать все, что возможно в программе для Node.js.
+- Загрузчкики можно настраивать с помощью объекта `options` (`query`-параметры в качестве настроек все еще поддерживаются, но не приветствуются)
+- В дополнению к обычному модулю `main` нормальные модули могут экспортировать загрузчик, если указать его в поле `loader` файла `package.json`.
+- Плагины расширяют возможности загрузчков.
+- Загрузчики могут создавать любые дополнительные файлы.
 
-Loaders allow more power in the JavaScript ecosystem through preprocessing
-functions (loaders). Users now have more flexibility to include fine-grained logic such as compression, packaging, language translations and [more](/loaders).
+В экосистеме JavaScript загрузчики предоставлют больше возможностей с помощью функций-препроцессоров. Пользователи имеют возможность гибко настраивать логику типа сжатия, упаковки, локализаций и [прочего](/loaders)
 
 
-## Resolving Loaders
+## Разрешение Загрузчиков
 
-Loaders follow the standard [module resolution](/concepts/module-resolution/). In most cases it will be loaded from the [module path](/concepts/module-resolution/#module-paths) (think `npm install`, `node_modules`).
+Загрузчкики разрешаются с помошью стандартного [разрешения модулей](/concepts/module-resolution/). В большинстве случаев они буду загружены из [хранилища моудулей](/concepts/module-resolution/#module-paths) (представьте `npm install`, `node_modules`)
 
-A loader module is expected to export a function and be written in Node.js compatible JavaScript. They are most commonly managed with npm, but you can also have custom loaders as files within your application. By convention, loaders are usually named `xxx-loader` (e.g. `json-loader`). See ["How to Write a Loader?"](/development/how-to-write-a-loader) for more information.
+Ожидается, что модуль загрузчика экспортирует функцию и написан на совместимом с Node.js JavaScript. Большинство загрузчиков распространяются через npm, но можно использовать и локальные файлы вашего приложения. Принято называть загрузчкики `xxx-loader` (например, `json-loader`). За подробностями обратитесь к разделу ["Как написать загрузчик"](/development/how-to-write-a-loader).
